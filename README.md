@@ -1,2 +1,2 @@
-# ahuiban.github.io
-Trivia Game
+# Trivia Game
+
