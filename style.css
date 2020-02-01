@@ -1,0 +1,30 @@
+* {
+    background-color: blanchedalmond;
+}
+
+
+#selAnswers div {
+    border: 1px solid black;
+    padding: 10px;
+    margin: 5px;
+    display: inline-block;
+}
+
+.cat {
+    font-size: 0.9em;
+    color: red
+}
+
+.que {
+    font-size: 1.5em;
+    color: indianred;
+    
+}
+
+#score {
+    color: goldenrod;
+    font-size: 1.1em;
+}
+
+
+@media only screen and (max-width : 768px) 
