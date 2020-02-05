@@ -1,53 +1,110 @@
-console.log("It's working")
+(function ($) {
+    $(function () {
+
+        const myForm = {
+            // elements
+            _btn: $('#btn'),
+            _output: $('#output'),
+            _selAnswer: $('#selAnswers'),
+            _score: $('#score'),
+
+            // static
+            URL: 'https://opentdb.com/api.php?amount=',
+
+            // attrs
+            answers: {
+                'correct': 0,
+                'wrong': 0
+            },
 
 
-    (function ($) {
-        $(function () {
+            init: function () {
 
-            const myForm = {
-                // elements
-                _btn: $('#btn'),
-                _output: $('#output'),
-                _selAnswer: $('#selAnswers'),
-                _score: $('#score'),
+                ths = this;
+                ths._btn.on('click', ths.getNextItem);
+                ths._selAnswer.on('click', ".ans", ths.checkAnswer);
+            },
+            getNextItem: function () {
+                ths = myForm;
+                ths.getItem(function (data) {
+                    ths._btn.css("display", "none");
+                    const obj = data.results[0];
 
-                // static
-                URL: 'https://opentdb.com/api.php?amount=',
+                    ths._output.html('<div>\
+                                        <div class="cat">' +
+                        obj.category +
+                        '</div>\
+                                        <div class="que">' +
+                        obj.question +
+                        '</div>\
+                                    </div>');
 
-                // attrs
-                answers: {
-                    'correct': 0,
-                    'wrong': 0
-                },
+                    ths.questionBuilder(
+                        obj.correct_answer,
+                        obj.incorrect_answers
+                    );
 
-                init: function () {
+                }, 1);
+            },
+            getItem: function (handler, amount = 1, ) {
+                const ths = this;
+                $.ajax({
+                    url: ths.URL + amount,
+                    method: "POST",
+                })
+                    .done(handler)
+                    .fail(function () {
 
-                    ths = this;
-                    ths._btn.on('click', ths.getNextItem);
-                    ths._selAnswer.on('click', ".ans", ths.checkAnswer);
-                },
+                        ths.html('<p> invalid responce from server </p>');
+                    })
 
-                getNextItem: function () {
-                    ths = myForm;
-                    ths.getItem(function (data) {
-                        ths._btn.css("display", "none");
-                        const obj = data.results[0];
+            },
+            questionBuilder: function (cor, incor) {
+                ths = this;
 
-                        ths._output.html('<div>\
-                                            <div class="cat">' +
-                            obj.category +
-                            '</div>\
-                                            <div class="que">' +
-                            obj.question +
-                            '</div>\
-                                        </div>');
 
-                        ths.questionBuilder(
-                            obj.correct_answer,
-                            obj.incorrect_answers
-                        );
+                ths._selAnswer
+                $.each(incor.concat([cor]), function (k, item) {
 
-                    }, 1);
-                },
+                    const _cor = (item == cor) ? true : false;
+                    ths._selAnswer.append('<div class="ans" data-cor=' + _cor + '>' +
+                        item +
+                        '</div>');
+                });
 
+            },
+            checkAnswer: function (e) {
+                ths = myForm;
+                const res = $(this).attr("data-cor");
+
+                const corectAnswerValue = $(this).parent().find('[data-cor=true]').text();
+
+
+                if (res == 'true') {
+
+                    ths._selAnswer.html('Correct!!! ' + corectAnswerValue)
+                    ths.answers.correct++;
+
+                } else {
+
+                    ths.answers.wrong++;
+
+                    ths._selAnswer.html('Wrong! It was: ' + corectAnswerValue)
+
+                }
+                ths._score.html(
+                    'Correct ' + ths.answers.correct +
+                    ' Wrong ' + ths.answers.wrong
+                );
+
+                ths._btn.css("display", 'block');
             }
+        }
+        myForm.init();
+
+
+
+    })
+})(jQuery)
+
+
